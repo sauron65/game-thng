@@ -1,0 +1,8 @@
+[
+  "./index.js",
+  "./package.json",
+  "./server.key",
+  "./server.cert",
+  "./inaccessible.json",
+  "./mime-types.json"
+]

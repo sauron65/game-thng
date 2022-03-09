@@ -1,0 +1,85 @@
+<body>
+  <canvas width="200" height="200"></canvas>
+</body>
+<script type="module">
+/**
+ * @type {ArrayBuffer} 
+ */
+const a = await ((await fetch("./x.boi")).arrayBuffer());
+
+const dv = new DataView(a);
+
+const width = dv.getUint16(0);
+const height = dv.getUint16(2);
+const pixels = new Uint8Array(a, 8);
+console.log(a.byteLength, pixels.length);
+
+const gl = document.querySelector("canvas").getContext("webgl2");
+
+const vs = `#version 300 es
+
+void main() {
+  gl_Position = vec4(0, 0, 0, 1);
+  gl_PointSize = 120.0;
+}`;
+
+const fs = `#version 300 es
+precision highp float;
+
+uniform sampler2D tex;
+
+out vec4 outColor;
+
+void main() {
+  outColor = texture(tex, gl_PointCoord.xy);
+}`;
+
+/**
+ * @type {WebGLProgram}
+ */
+let program;
+{
+  const vss = gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(vss, vs);
+  gl.compileShader(vss);
+
+  const fss = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(fss, fs);
+  gl.compileShader(fss);
+  if (!gl.getShaderParameter(fss, gl.COMPILE_STATUS)) {
+    console.log(gl.getShaderInfoLog(fss));
+  }
+
+  program = gl.createProgram();
+
+  gl.attachShader(program, vss);
+  gl.attachShader(program, fss);
+  gl.linkProgram(program);
+
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    console.log(gl.getProgramInfoLog(program));
+  }
+}
+
+const tex = gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D, tex);
+gl.texImage2D(
+    gl.TEXTURE_2D,
+    0,                 // level
+    gl.RGBA,           // internal format
+    width,                 // width
+    height,                 // height
+    0,                 // border
+    gl.RGBA,           // format
+    gl.UNSIGNED_BYTE,  // type
+    pixels,            // data
+);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+gl.useProgram(program);
+
+const offset = 0;
+const count = 1;
+gl.drawArrays(gl.POINTS, offset, count);
+</script>

@@ -1,0 +1,14 @@
+<body>
+  <canvas></canvas>
+</body>
+<script type="module">
+/**
+ * @type {ArrayBuffer} 
+ */
+const a = await (await fetch("./x.img")).arrayBuffer();
+
+const dv = new DataView(a);
+
+const width = dv.getUint8(0);
+
+</script>
