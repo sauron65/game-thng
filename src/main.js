@@ -4,6 +4,7 @@ import { Mat3 } from "./modules/mat3.js";
 import {
   resizeCanvasToDisplaySize,
 } from "./modules/functions.js";
+import { key } from "./modules/key.js";
 
 const π = Math.PI;
 if (!gl) {
@@ -236,7 +237,7 @@ class Sprite extends Vec2 {
     return true;
   }
   cp() {
-    for (let i = gh[currentLevel].length - 1; i >= 0; i--) {
+    /*for (let i = gh[currentLevel].length - 1; i >= 0; i--) {
       if (this.col(gh[currentLevel][i])) {
         return true;
       }
@@ -247,7 +248,8 @@ class Sprite extends Vec2 {
         return false;
       }
     }
-    return false;
+    return false;*/
+
   }
   cp2() {
     ptimer++;
@@ -391,6 +393,10 @@ function rand(a, b) {
 const scene = [];
 const tiles = [];
 const frontTiles = [];
+/**
+ * @type {number[]}
+ */
+let hitBoxTiles;
 let currentLevel = 0;
 const player = new Sprite([0, 0, 1, 1], 40, 40, 1, "p");
 //player.id="p"
@@ -532,6 +538,7 @@ function createLevel() {
       parseLayer(layer, e.data.width, e.data.height, false);
       layer = e.data.entities;
       parseLayer(layer, e.data.width, e.data.height, false);
+      hitBoxTiles = e.data.hitboxes;
     } else if (e.data.type === "progress") {
       progress.innerText = `${
         (e.data.receivedLength / e.data.contentLength ?? 0) * 100
