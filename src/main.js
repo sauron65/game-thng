@@ -249,13 +249,16 @@ class Sprite extends Vec2 {
       }
     }
     return false;*/
-    const tile = solidTileAt(this.x, this.y);
+    //const tile = solidTileAt(this.x, this.y);
 
-    //console.log(tile);
+    const left = this.x - this.width / 2;
+    const right = this.x + this.width / 2 - 1;
+    const top = this.y - this.height / 2;
+    const bottom = this.y + this.height / 2 - 1;
 
-    if (tile === 1) {
+    if (solidTileAt(left, top) === 1 || solidTileAt(right, top) === 1 || solidTileAt(right, bottom) === 1 || solidTileAt(left, bottom) === 1) {
       return true
-    } else if (tile === 2 && this.id === "p") {
+    } else if ((solidTileAt(left, top) === 2 || solidTileAt(right, top) === 2 || solidTileAt(right, bottom) === 2 || solidTileAt(left, bottom) === 2) && this.id === "p") {
       gameOver();
       return false;
     }
@@ -308,42 +311,47 @@ class Sprite extends Vec2 {
         }
       }
     }
-    for (let i = gh[currentLevel].length - 1; i >= 0; --i) {
+    /*for (let i = gh[currentLevel].length - 1; i >= 0; --i) {
       if (this.col(gh[currentLevel][i])) {
         return true;
       }
-    }
+    }*/
     for (let i = scene.length - 1; i >= 0; --i) {
       if (scene[i].id === "c" && this.col(scene[i])) {
         coins++;
         scene.splice(i, 1);
       }
     }
-    for (let i = lh[currentLevel].length - 1; i >= 0; --i) {
+    /*for (let i = lh[currentLevel].length - 1; i >= 0; --i) {
       if (this.col(lh[currentLevel][i]) && this.id === "p") {
         gameOver();
         return false;
       }
+    } */
+    const left = this.x - this.width / 2;
+    const right = this.x + this.width / 2 - 1;
+    const top = this.y - this.height / 2;
+    const bottom = this.y + this.height / 2 - 1;
+
+    if (solidTileAt(left, top) === 1 || solidTileAt(right, top) === 1 || solidTileAt(right, bottom) === 1 || solidTileAt(left, bottom) === 1) {
+      return true
+    } else if ((solidTileAt(left, top) === 2 || solidTileAt(right, top) === 2 || solidTileAt(right, bottom) === 2 || solidTileAt(left, bottom) === 2) && this.id === "p") {
+      gameOver();
+      return false;
     }
     return false;
   }
   cp3() {
-    for (let i = scene.length - 1; i >= 0; --i) {
-      if (scene[i].id === "c" && this.col(scene[i])) {
-        coins++;
-        scene.splice(i, 1);
-      }
-    }
-    for (let i = gh[currentLevel].length - 1; i >= 0; --i) {
-      if (this.col(gh[currentLevel][i])) {
-        return true;
-      }
-    }
-    for (let i = lh[currentLevel].length - 1; i >= 0; --i) {
-      if (this.col(lh[currentLevel][i]) && this.id === "p") {
-        gameOver();
-        return false;
-      }
+    const left = this.x - this.width / 2;
+    const right = this.x + this.width / 2 - 1;
+    const top = this.y - this.height / 2;
+    const bottom = this.y + this.height / 2 - 1;
+
+    if (solidTileAt(left, top) === 1 || solidTileAt(right, top) === 1 || solidTileAt(right, bottom) === 1 || solidTileAt(left, bottom) === 1) {
+      return true
+    } else if ((solidTileAt(left, top) === 2 || solidTileAt(right, top) === 2 || solidTileAt(right, bottom) === 2 || solidTileAt(left, bottom) === 2) && this.id === "p") {
+      gameOver();
+      return false;
     }
     return;
   }
@@ -404,7 +412,7 @@ function solidTileAt(x, y) {
   const col = Math.floor(x / tileSize[0]);
   const row = Math.floor(y / tileSize[1]);
 
-  return hitBoxTiles[col * levelSize.x + row];
+  return hitBoxTiles[row * levelSize.x + col];
 }
 
 function rand(a, b) {
@@ -573,7 +581,6 @@ function createLevel() {
       levelSize.x = e.data.width;
       levelSize.y = e.data.height;
       tileSize = e.data.tileSize;
-      console.log(hitBoxTiles)
       progress.innerText = "";
     } else if (e.data.type === "progress") {
       progress.innerText = `${
