@@ -249,7 +249,18 @@ class Sprite extends Vec2 {
       }
     }
     return false;*/
+    const tile = solidTileAt(this.x, this.y);
 
+    //console.log(tile);
+
+    if (tile === 1) {
+      return true
+    } else if (tile === 2 && this.id === "p") {
+      gameOver();
+      return false;
+    }
+
+    return false;
   }
   cp2() {
     ptimer++;
@@ -374,6 +385,7 @@ class Sprite extends Vec2 {
     }
   }
 }
+
 function drawTile(color, x, y) {
   gl.uniform4fv(tileProgram.colorLoc, color);
   gl.uniformMatrix3fv(
@@ -387,9 +399,18 @@ function drawTile(color, x, y) {
   );
   gl.drawArrays(gl.TRIANGLES, 0, 6);
 }
+
+function solidTileAt(x, y) {
+  const col = Math.floor(x / tileSize[0]);
+  const row = Math.floor(y / tileSize[1]);
+
+  return hitBoxTiles[col * levelSize.x + row];
+}
+
 function rand(a, b) {
   return Math.floor(Math.random() * (b - a)) + a;
 }
+
 const scene = [];
 const tiles = [];
 const frontTiles = [];
@@ -398,6 +419,17 @@ const frontTiles = [];
  */
 let hitBoxTiles;
 let currentLevel = 0;
+
+/**
+ * @type {{ x: number, y: number }}
+ */
+let levelSize = { x: null, y: null };
+
+/**
+ * @type {[number, number]}
+ */
+let tileSize;
+
 const player = new Sprite([0, 0, 1, 1], 40, 40, 1, "p");
 //player.id="p"
 const gh = [
@@ -531,7 +563,6 @@ function createLevel() {
   });
   levelWorker.onmessage = function (e) {
     if (e.data.type === "level") {
-      progress.innerText = "";
       let layer = e.data.background;
       parseLayer(layer, e.data.width, e.data.height, true);
       layer = e.data.foreground;
@@ -539,6 +570,11 @@ function createLevel() {
       layer = e.data.entities;
       parseLayer(layer, e.data.width, e.data.height, false);
       hitBoxTiles = e.data.hitboxes;
+      levelSize.x = e.data.width;
+      levelSize.y = e.data.height;
+      tileSize = e.data.tileSize;
+      console.log(hitBoxTiles)
+      progress.innerText = "";
     } else if (e.data.type === "progress") {
       progress.innerText = `${
         (e.data.receivedLength / e.data.contentLength ?? 0) * 100
@@ -688,38 +724,39 @@ function render(now) {
   //ctx.setTransform(1, 0, 0, 1, 0, 0);
   //ctx.clearRect(0, 0, 1000, 500);
   //ctx.translate(scrollx, scrolly);
-
-  //entities - update
-  for (let i = 0; i < scene.length; ++i) {
-    const s = scene[i];
-    if (!(s.x + scrollx < -200 || s.x + scrollx > gl.canvas.width + 200)) {
-      s.update(delta);
-      //console.log(scene[i].x+","+scene[i].x)
+  if (progress.innerText === "") {
+    //entities - update
+    for (let i = 0; i < scene.length; ++i) {
+      const s = scene[i];
+      if (!(s.x + scrollx < -200 || s.x + scrollx > gl.canvas.width + 200)) {
+        s.update(delta);
+        //console.log(scene[i].x+","+scene[i].x)
+      }
     }
-  }
 
-  //background tiles
-  for (let i = 0; i < tiles.length; ++i) {
-    const t = tiles[i];
-    if (!(t.x + scrollx < -25 || t.x + scrollx > gl.canvas.width + 25)) {
-      drawTile(t.color, t.x, t.y);
+    //background tiles
+    for (let i = 0; i < tiles.length; ++i) {
+      const t = tiles[i];
+      if (!(t.x + scrollx < -25 || t.x + scrollx > gl.canvas.width + 25)) {
+        drawTile(t.color, t.x, t.y);
+      }
     }
-  }
 
-  //entities
-  for (let i = 0; i < scene.length; ++i) {
-    const s = scene[i];
-    if (!(s.x + scrollx < -200 || s.x + scrollx > gl.canvas.width + 200)) {
-      s.render();
-      //console.log(scene[i].x+","+scene[i].x)
+    //entities
+    for (let i = 0; i < scene.length; ++i) {
+      const s = scene[i];
+      if (!(s.x + scrollx < -200 || s.x + scrollx > gl.canvas.width + 200)) {
+        s.render();
+        //console.log(scene[i].x+","+scene[i].x)
+      }
     }
-  }
 
-  //foreground tiles
-  for (let i = 0; i < frontTiles.length; ++i) {
-    const t = frontTiles[i];
-    if (!(t.x + scrollx < -25 || t.x + scrollx > gl.canvas.width + 25)) {
-      drawTile(t.color, t.x, t.y);
+    //foreground tiles
+    for (let i = 0; i < frontTiles.length; ++i) {
+      const t = frontTiles[i];
+      if (!(t.x + scrollx < -25 || t.x + scrollx > gl.canvas.width + 25)) {
+        drawTile(t.color, t.x, t.y);
+      }
     }
   }
 

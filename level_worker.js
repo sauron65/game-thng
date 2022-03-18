@@ -36,7 +36,7 @@ async function parseFile(file, type) {
 
   if (type === "level") {
     //await parseFile(json.tileset, "tileset");
-    postMessage({ type: "level", index: json.index, width: json.width, height: json.height, ...json.tiles })
+    postMessage({ type: "level", index: json.index, width: json.width, height: json.height, tileSize: json.tilesize, ...json.tiles })
   } else if (type === "tileset") {
     if (json.tiles.palette.normalized) {
       json.tiles.palette.data = json.tiles.palette.data.map(x => x * 255);
