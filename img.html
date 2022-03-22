@@ -11,7 +11,7 @@ const dv = new DataView(a);
 
 const width = dv.getUint16(0);
 const height = dv.getUint16(2);
-const pixels = new Uint8Array(a, 8);
+const pixels = new Uint8Array(a, 4);
 console.log(a.byteLength, pixels.length);
 
 const gl = document.querySelector("canvas").getContext("webgl2");
@@ -28,10 +28,10 @@ precision highp float;
 
 uniform sampler2D tex;
 
-out vec4 outColor;
+out vec4 glFrag_Color;
 
 void main() {
-  outColor = texture(tex, gl_PointCoord.xy);
+  glFrag_Color = texture(tex, gl_PointCoord.xy);
 }`;
 
 /**
