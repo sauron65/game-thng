@@ -420,7 +420,21 @@ function rand(a, b) {
 }
 
 const scene = [];
+/**
+ * @type {{
+ *   color: number[];
+ *   x: number;
+ *   y: number
+ * }}
+ */
 const tiles = [];
+/**
+ * @type {{
+ *   color: number[];
+ *   x: number;
+ *   y: number
+ * }}
+ */
 const frontTiles = [];
 /**
  * @type {number[]}
@@ -429,7 +443,10 @@ let hitBoxTiles;
 let currentLevel = 0;
 
 /**
- * @type {{ x: number, y: number }}
+ * @type {{
+ *   x: number;
+ *   y: number 
+ * }}
  */
 let levelSize = { x: null, y: null };
 

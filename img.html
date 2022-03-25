@@ -2,10 +2,12 @@
   <canvas width="200" height="200"></canvas>
 </body>
 <script type="module">
+
+const texture = "lava";
 /**
  * @type {ArrayBuffer} 
  */
-const a = await ((await fetch("./x.boi")).arrayBuffer());
+const a = await ((await fetch(`./textures/${texture}.boi`)).arrayBuffer());
 
 const dv = new DataView(a);
 
