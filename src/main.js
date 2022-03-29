@@ -1,4 +1,4 @@
-import { canvas, gl, tileProgram, tileBuffer } from "./modules/gl.js";
+import { canvas, gl, program, tileBuffer } from "./modules/gl.js";
 import { Vec2 } from "./modules/vec2.js";
 import { Mat3 } from "./modules/mat3.js";
 import {
@@ -191,8 +191,8 @@ class Sprite extends Vec2 {
     );
     //this.matrix = Mat3.rotate(this.matrix, angleInRadians);
     //this.matrix = Mat3.scale(this.matrix, scale[0], scale[1]);
-    gl.uniform4fv(tileProgram.colorLoc, this.color);
-    gl.uniformMatrix3fv(tileProgram.matrixLoc, false, this.matrix);
+    gl.uniform4fv(program.colorLoc, this.color);
+    gl.uniformMatrix3fv(program.matrixLoc, false, this.matrix);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
     return this;
   }
@@ -395,9 +395,9 @@ class Sprite extends Vec2 {
 }
 
 function drawTile(color, x, y) {
-  gl.uniform4fv(tileProgram.colorLoc, color);
+  gl.uniform4fv(program.colorLoc, color);
   gl.uniformMatrix3fv(
-    tileProgram.matrixLoc,
+    program.matrixLoc,
     false,
     Mat3.translate(
       Mat3.projection(gl.canvas.clientWidth, gl.canvas.clientHeight),
@@ -424,7 +424,7 @@ const scene = [];
  * @type {{
  *   color: number[];
  *   x: number;
- *   y: number
+ *   y: number;
  * }}
  */
 const tiles = [];
@@ -432,7 +432,7 @@ const tiles = [];
  * @type {{
  *   color: number[];
  *   x: number;
- *   y: number
+ *   y: number;
  * }}
  */
 const frontTiles = [];
@@ -703,10 +703,10 @@ function newLevel() {
 }
 createLevel();
 //alert(scene.length)
-gl.useProgram(tileProgram.program);
-gl.enableVertexAttribArray(tileProgram.positionLoc);
+gl.useProgram(program.program);
+gl.enableVertexAttribArray(program.positionLoc);
 gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
-gl.vertexAttribPointer(tileProgram.positionLoc, 2, gl.FLOAT, false, 0, 0);
+gl.vertexAttribPointer(program.positionLoc, 2, gl.FLOAT, false, 0, 0);
 
 // FPS
 // https://stackoverflow.com/a/16447895/13938811
@@ -812,29 +812,27 @@ function render(now) {
   }
 }
 //console.log(scene.length)
-window.onload = function () {
-  window.addEventListener("gamepadconnected", function (e) {
-    console.log("connect", e.gamepad);
-    gamepad_connected = true;
-  });
-  window.addEventListener("gamepaddisconnected", function (e) {
-    console.log("connect", e.gamepad);
-    gamepad_connected = true;
-  });
-  requestAnimationFrame(render);
-  document.addEventListener(
-    "keydown",
-    function (e) {
-      if (e.key === "Enter") {
-        toggleFullScreen();
-      }
-      if (e.key === "Escape") {
-        e.preventDefault();
-      }
-    },
-    false
-  );
-};
+window.addEventListener("gamepadconnected", function (e) {
+  console.log("connect", e.gamepad);
+  gamepad_connected = true;
+});
+window.addEventListener("gamepaddisconnected", function (e) {
+  console.log("connect", e.gamepad);
+  gamepad_connected = true;
+});
+requestAnimationFrame(render);
+document.addEventListener(
+  "keydown",
+  function (e) {
+    if (e.key === "Enter") {
+      toggleFullScreen();
+    }
+    if (e.key === "Escape") {
+      e.preventDefault();
+    }
+  },
+  false
+);
 window.scene = scene;
 window.Sprite = Sprite;
 window.Vec2 = Vec2;

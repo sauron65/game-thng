@@ -28,64 +28,81 @@ void main() {
 }
 `;
 
-// /**
-//  * 
-//  * @param {string} url 
-//  * @returns Promise<ArrayBuffer>
-//  */
-// async function getFile(url) {
-//   return await ((await fetch(url)).arrayBuffer());
-// }
+/**
+ * 
+ * @param {string} url 
+ * @returns Promise<ArrayBuffer>
+ */
+async function getFile(url) {
+  return await ((await fetch(url)).arrayBuffer());
+}
 
-// /**
-//  * 
-//  * @param {ArrayBuffer} buffer 
-//  * @returns WebGLTexture
-//  */
-// function getTexture(buffer) {
-//   const dv = new DataView(buffer);
+/**
+ * 
+ * @param {ArrayBuffer} buffer 
+ * @returns WebGLTexture
+ */
+function getTexture(buffer) {
+  const dv = new DataView(buffer);
 
-//   const width = dv.getUint16(0);
-//   const height = dv.getUint16(2);
-//   const pixels = new Uint8Array(buffer, 4);
+  const width = dv.getUint16(0);
+  const height = dv.getUint16(2);
+  const pixels = new Uint8Array(buffer, 4);
 
-//   const tex = gl.createTexture();
-//   gl.bindTexture(gl.TEXTURE_2D, tex);
-//   gl.texImage2D(
-//     gl.TEXTURE_2D,
-//     0,                 // level
-//     gl.RGBA,           // internal format
-//     width,                 // width
-//     height,                 // height
-//     0,                 // border
-//     gl.RGBA,           // format
-//     gl.UNSIGNED_BYTE,  // type
-//     pixels,            // data
-//   );
-//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-//   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(
+    gl.TEXTURE_2D,
+    0,                 // level
+    gl.RGBA,           // internal format
+    width,                 // width
+    height,                 // height
+    0,                 // border
+    gl.RGBA,           // format
+    gl.UNSIGNED_BYTE,  // type
+    pixels,            // data
+  );
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
-//   return tex;
-// }
+  return tex;
+}
 
-// const textureBuffers = await Promise.all([
-//   getFile("/textures/stone.boi"),
-//   getFile("/textures/mossyStone.boi"),
-//   getFile("/textures/lava.boi"),
-//   getFile("/textures/coin.boi")
-// ]);
+const textureBuffers = await Promise.all([
+  getFile("/textures/stone.boi"),
+  getFile("/textures/mossyStone.boi"),
+  getFile("/textures/lava.boi"),
+  getFile("/textures/coin.boi")
+]);
 
-// /**
-//  * @type {{
-//  *   [x: string]: WebGLTexture
-//  * }}
-//  */
-// const textures = {
-//   "stone": getTexture(textureBuffers[0]),
-//   "mossyStone": getTexture(textureBuffers[1]),
-//   "lava": getTexture(textureBuffers[2]),
-//   "coin": getTexture(textureBuffers[3])
-// };
+/**
+ * @type {{
+ *   [x: string]: WebGLTexture
+ * }}
+ */
+const textures = {
+  "stone": getTexture(textureBuffers[0]),
+  "mossyStone": getTexture(textureBuffers[1]),
+  "lava": getTexture(textureBuffers[2]),
+  "coin": getTexture(textureBuffers[3])
+};
+
+const program = {
+  vertexShader: createShader(gl, gl.VERTEX_SHADER, colorVS),
+  fragmentShader: createShader(gl, gl.FRAGMENT_SHADER, colorFS),
+  program: null
+};
+program.program = createProgram(
+  gl,
+  program.vertexShader,
+  program.fragmentShader
+);
+program.positionLoc = gl.getAttribLocation(
+  program.program,
+  "a_position"
+);
+program.colorLoc = gl.getUniformLocation(program.program, "u_color");
+program.matrixLoc = gl.getUniformLocation(program.program, "u_matrix");
 
 const tileProgram = {
   vertexShader: createShader(gl, gl.VERTEX_SHADER, colorVS),
@@ -115,7 +132,7 @@ gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
 gl.bufferData(
   gl.ARRAY_BUFFER,
   new Float32Array([
-    -25, -25, 
+    -25, -25,
      25, -25, 
     -25,  25, 
     -25,  25, 
@@ -124,4 +141,24 @@ gl.bufferData(
   gl.STATIC_DRAW
 );
 
-export { canvas, gl, tileProgram, tileBuffer };
+const uvBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
+/*gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+ -25, -25,
+  25, -25,
+ -25,  25,
+  25,  25
+]), gl.STATIC_DRAW);*/
+gl.bufferData(
+  gl.ARRAY_BUFFER,
+  new Float32Array([
+    0, 0,
+    1, 0, 
+    0, 1, 
+    0, 1, 
+    1, 0,
+    1, 1]),
+  gl.STATIC_DRAW
+);
+
+export { canvas, gl, program, tileBuffer, uvBuffer, textures };

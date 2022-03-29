@@ -137,8 +137,8 @@ export class Sprite extends Vec2 {
     );
     //this.matrix = Mat3.rotate(this.matrix, angleInRadians);
     //this.matrix = Mat3.scale(this.matrix, scale[0], scale[1]);
-    gl.uniform4fv(tileProgram.colorLoc, this.color);
-    gl.uniformMatrix3fv(tileProgram.matrixLoc, false, this.matrix);
+    gl.uniform4fv(program.colorLoc, this.color);
+    gl.uniformMatrix3fv(program.matrixLoc, false, this.matrix);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
     return this;
   }
