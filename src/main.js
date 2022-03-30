@@ -1,4 +1,4 @@
-import { canvas, gl, program, tileBuffer } from "./modules/gl.js";
+import { canvas, gl, program, tileBuffer, tileProgram, uvBuffer, textures } from "./modules/gl.js";
 import { Vec2 } from "./modules/vec2.js";
 import { Mat3 } from "./modules/mat3.js";
 import {
@@ -394,10 +394,23 @@ class Sprite extends Vec2 {
   }
 }
 
-function drawTile(color, x, y) {
-  gl.uniform4fv(program.colorLoc, color);
+gl.activeTexture(gl.TEXTURE0);
+gl.bindTexture(gl.TEXTURE_2D, textures["stone"]);
+
+gl.activeTexture(gl.TEXTURE1);
+gl.bindTexture(gl.TEXTURE_2D, textures["mossyStone"]);
+
+gl.activeTexture(gl.TEXTURE2);
+gl.bindTexture(gl.TEXTURE_2D, textures["lava"]);
+
+gl.activeTexture(gl.TEXTURE3);
+gl.bindTexture(gl.TEXTURE_2D, textures["coin"]);
+
+function drawTile(id, x, y) {
+  
+  gl.uniform1i(tileProgram.textureLoc, id);
   gl.uniformMatrix3fv(
-    program.matrixLoc,
+    tileProgram.matrixLoc,
     false,
     Mat3.translate(
       Mat3.projection(gl.canvas.clientWidth, gl.canvas.clientHeight),
@@ -505,15 +518,22 @@ function parseLayer(layer, width, height, background) {
       switch (layer[y * width + x]) {
         case 1:
           (background ? tiles : frontTiles).push({
-            color: [0.5, 0.5, 0.5, 1],
+            id: 0,
             x: x * 50 + 25,
             y: y * 50 + 25,
           });
           //console.log("b" + x);
           break;
+        case 2:
+          (background ? tiles : frontTiles).push({
+            id: 1,
+            x: x * 50 + 25,
+            y: y * 50 + 25,
+          });
+          break;
         case 3:
           (background ? tiles : frontTiles).push({
-            color: [1, 0, 0, 1],
+            id: 2,
             x: x * 50 + 25,
             y: y * 50 + 25,
           });
@@ -598,6 +618,7 @@ function createLevel() {
       levelSize.x = e.data.width;
       levelSize.y = e.data.height;
       tileSize = e.data.tileSize;
+      console.log(tiles, frontTiles);
       progress.innerText = "";
     } else if (e.data.type === "progress") {
       progress.innerText = `${
@@ -759,14 +780,25 @@ function render(now) {
     }
 
     //background tiles
+    gl.useProgram(tileProgram.program);
+    gl.enableVertexAttribArray(tileProgram.positionLoc);
+    gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
+    gl.vertexAttribPointer(tileProgram.positionLoc, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(tileProgram.uvLoc);
+    gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
+    gl.vertexAttribPointer(tileProgram.uvLoc, 2, gl.FLOAT, false, 0, 0);
     for (let i = 0; i < tiles.length; ++i) {
       const t = tiles[i];
       if (!(t.x + scrollx < -25 || t.x + scrollx > gl.canvas.width + 25)) {
-        drawTile(t.color, t.x, t.y);
+        drawTile(t.id, t.x, t.y);
       }
     }
 
     //entities
+    gl.useProgram(program.program);
+    gl.enableVertexAttribArray(program.positionLoc);
+    gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
+    gl.vertexAttribPointer(program.positionLoc, 2, gl.FLOAT, false, 0, 0);
     for (let i = 0; i < scene.length; ++i) {
       const s = scene[i];
       if (!(s.x + scrollx < -200 || s.x + scrollx > gl.canvas.width + 200)) {
@@ -776,10 +808,17 @@ function render(now) {
     }
 
     //foreground tiles
+    gl.useProgram(tileProgram.program);
+    gl.enableVertexAttribArray(tileProgram.positionLoc);
+    gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
+    gl.vertexAttribPointer(tileProgram.positionLoc, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(tileProgram.uvLoc);
+    gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
+    gl.vertexAttribPointer(tileProgram.uvLoc, 2, gl.FLOAT, false, 0, 0);
     for (let i = 0; i < frontTiles.length; ++i) {
       const t = frontTiles[i];
       if (!(t.x + scrollx < -25 || t.x + scrollx > gl.canvas.width + 25)) {
-        drawTile(t.color, t.x, t.y);
+        drawTile(t.id, t.x, t.y);
       }
     }
   }

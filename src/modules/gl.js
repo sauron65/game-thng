@@ -5,8 +5,8 @@ import { createShader, createProgram } from "./functions.js";
 const canvas = document.querySelector("canvas");
 const gl = canvas.getContext("webgl2");
 
-const colorVS = `
-attribute vec2 a_position;
+const colorVS = `#version 300 es
+in vec2 a_position;
 
 //uniform float u_layer
 uniform mat3 u_matrix;
@@ -18,13 +18,15 @@ void main() {
   // gl_Position = vec4((u_matrix * vec3(a_position * u_scale, 1)).xy, /** /u_layer/**/ /**/0/**/, 1);
 }
 `;
-const colorFS = `
+const colorFS = `#version 300 es
 precision mediump float;
 
 uniform vec4 u_color;
 
+out vec4 glFragColor;
+
 void main() {
-  gl_FragColor = u_color;
+  glFragColor = u_color;
 }
 `;
 
@@ -74,6 +76,7 @@ const textureBuffers = await Promise.all([
   getFile("/textures/lava.boi"),
   getFile("/textures/coin.boi")
 ]);
+console.log(textureBuffers);
 
 /**
  * @type {{
@@ -104,9 +107,20 @@ program.positionLoc = gl.getAttribLocation(
 program.colorLoc = gl.getUniformLocation(program.program, "u_color");
 program.matrixLoc = gl.getUniformLocation(program.program, "u_matrix");
 
+/**
+ * @type {{
+ *  vertexShader: WebGLShader;
+ *  fragmentShader: WebGLShader;
+ *  program: WebGLProgram;
+ *  positionLoc: number;
+ *  uvLoc: number;
+ *  matrixLoc: WebGLUniformLocation;
+ *  textureLoc: WebGLUniformLocation;
+ * }}
+ */
 const tileProgram = {
-  vertexShader: createShader(gl, gl.VERTEX_SHADER, colorVS),
-  fragmentShader: createShader(gl, gl.FRAGMENT_SHADER, colorFS),
+  vertexShader: createShader(gl, gl.VERTEX_SHADER, (await (await fetch("./src/shaders/texture.vsh")).text())),
+  fragmentShader: createShader(gl, gl.FRAGMENT_SHADER, (await (await fetch("./src/shaders/texture.fsh")).text())),
   program: null
 };
 tileProgram.program = createProgram(
@@ -118,8 +132,12 @@ tileProgram.positionLoc = gl.getAttribLocation(
   tileProgram.program,
   "a_position"
 );
-tileProgram.colorLoc = gl.getUniformLocation(tileProgram.program, "u_color");
+tileProgram.uvLoc = gl.getAttribLocation(
+  tileProgram.program,
+  "a_uv"
+);
 tileProgram.matrixLoc = gl.getUniformLocation(tileProgram.program, "u_matrix");
+tileProgram.textureLoc = gl.getUniformLocation(tileProgram.program, "u_texture");
 
 const tileBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
@@ -161,4 +179,4 @@ gl.bufferData(
   gl.STATIC_DRAW
 );
 
-export { canvas, gl, program, tileBuffer, uvBuffer, textures };
+export { canvas, gl, program, tileBuffer, tileProgram, uvBuffer, textures };
