@@ -1,5 +1,4 @@
 //  https://webglfundamentals.org/webgl/lessons/webgl-2d-matrices.html
-console.log(document.getElementById.toString())
 export class Mat3 {
   static projection(width, height) {
     // Note: This matrix flips the Y axis so that 0 is at the top.

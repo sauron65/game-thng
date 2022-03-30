@@ -1,13 +1,18 @@
+<style>
+  html {
+    background-color: black;
+  }
+</style>
 <body>
   <canvas width="200" height="200"></canvas>
 </body>
 <script type="module">
 
-const texture = "mossyStone";
+const texture = "coin";
 /**
  * @type {ArrayBuffer} 
  */
-const a = await ((await fetch(`./textures/${texture}.boi`)).arrayBuffer());
+const a = await ((await fetch(/*`./textures/${texture}.boi`*/"./x.boi")).arrayBuffer());
 
 const dv = new DataView(a);
 

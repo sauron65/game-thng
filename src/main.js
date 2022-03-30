@@ -406,6 +406,7 @@ gl.bindTexture(gl.TEXTURE_2D, textures["lava"]);
 gl.activeTexture(gl.TEXTURE3);
 gl.bindTexture(gl.TEXTURE_2D, textures["coin"]);
 
+
 function drawTile(id, x, y) {
   
   gl.uniform1i(tileProgram.textureLoc, id);
