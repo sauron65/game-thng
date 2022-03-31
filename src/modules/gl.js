@@ -78,6 +78,7 @@ const textureBuffers = await Promise.all([
   getFile("/textures/coin.boi"),
   getFile("/textures/e1.boi"),
   getFile("/textures/e2.boi"),
+  getFile("/textures/door.boi")
 ]);
 console.log(textureBuffers);
 
@@ -94,6 +95,7 @@ const textures = {
   "coin": getTexture(textureBuffers[4]),
   "e1": getTexture(textureBuffers[5]),
   "e2": getTexture(textureBuffers[6]),
+  "door": getTexture(textureBuffers[7])
 };
 
 const program = {

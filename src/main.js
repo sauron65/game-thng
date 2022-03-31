@@ -417,6 +417,9 @@ gl.bindTexture(gl.TEXTURE_2D, textures["e1"]);
 gl.activeTexture(gl.TEXTURE6);
 gl.bindTexture(gl.TEXTURE_2D, textures["e2"]);
 
+gl.activeTexture(gl.TEXTURE7);
+gl.bindTexture(gl.TEXTURE_2D, textures["door"]);
+
 gl.enable(gl.BLEND);
 gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 function drawTile(id, x, y) {
@@ -518,7 +521,7 @@ function parseLayer(layer, width, height, background) {
           break;
         case 6:
           scene.push(
-            new Sprite(5, 64, 64, 1, "e1").pos(
+            new Sprite(5, 48, 48, 1, "e1").pos(
               x * 64 + 32,
               y * 64 + 31
             )
@@ -526,20 +529,20 @@ function parseLayer(layer, width, height, background) {
           break;
         case 7:
           scene.push(
-            new Sprite(6, 64, 64, 1, "e2").pos(
+            new Sprite(6, 48, 48, 1, "e2").pos(
               x * 64 + 32,
               y * 64 + 31
             )
           );
           break;
         case 8:
-          /*scene.push(
-            new Sprite([0.647, 0.164, 0.164, 1], 64, 64, 0, "d1").pos(
+          scene.push(
+            new Sprite(7, 64, 64, 0, "d1").pos(
               x * 64 + 32,
               y * 64 + 32
             )
           );
-          d.push(scene.length - 1);*/
+          d.push(scene.length - 1);
           break;
         case "/":
           scene.push(
