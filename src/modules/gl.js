@@ -74,7 +74,10 @@ const textureBuffers = await Promise.all([
   getFile("/textures/stone.boi"),
   getFile("/textures/mossyStone.boi"),
   getFile("/textures/lava.boi"),
-  getFile("/textures/coin.boi")
+  getFile("/textures/player.boi"),
+  getFile("/textures/coin.boi"),
+  getFile("/textures/e1.boi"),
+  getFile("/textures/e2.boi"),
 ]);
 console.log(textureBuffers);
 
@@ -87,7 +90,10 @@ const textures = {
   "stone": getTexture(textureBuffers[0]),
   "mossyStone": getTexture(textureBuffers[1]),
   "lava": getTexture(textureBuffers[2]),
-  "coin": getTexture(textureBuffers[3])
+  "player": getTexture(textureBuffers[3]),
+  "coin": getTexture(textureBuffers[4]),
+  "e1": getTexture(textureBuffers[5]),
+  "e2": getTexture(textureBuffers[6]),
 };
 
 const program = {
@@ -142,30 +148,30 @@ tileProgram.textureLoc = gl.getUniformLocation(tileProgram.program, "u_texture")
 const tileBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
 /*gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
- -25, -25,
-  25, -25,
- -25,  25,
-  25,  25
+ -32, -32,
+  32, -32,
+ -32,  32,
+  32,  32
 ]), gl.STATIC_DRAW);*/
 gl.bufferData(
   gl.ARRAY_BUFFER,
   new Float32Array([
-    -25, -25,
-     25, -25, 
-    -25,  25, 
-    -25,  25, 
-     25, -25,
-     25,  25]),
+    -32, -32,
+     32, -32, 
+    -32,  32, 
+    -32,  32, 
+     32, -32,
+     32,  32]),
   gl.STATIC_DRAW
 );
 
 const uvBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
 /*gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
- -25, -25,
-  25, -25,
- -25,  25,
-  25,  25
+ -32, -32,
+  32, -32,
+ -32,  32,
+  32,  32
 ]), gl.STATIC_DRAW);*/
 gl.bufferData(
   gl.ARRAY_BUFFER,

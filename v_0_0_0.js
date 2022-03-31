@@ -1,4 +1,4 @@
-//first draft (almost a year old)
+//first draft (a year old)
 var canvas = document.querySelector("canvas");
 var ctx = canvas.getContext("2d");
 var jh = -16;

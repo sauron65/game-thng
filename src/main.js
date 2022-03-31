@@ -60,6 +60,7 @@ class Sprite extends Vec2 {
       this.d = 10;
     }
     this.matrix = Mat3.identity();
+    console.log(this.color);
     // console.log("("+this.width+","+this.height+")")
   }
   update(delta) {
@@ -96,7 +97,7 @@ class Sprite extends Vec2 {
       }
     }
     if (this.id === "p") {
-      let d = 300 * delta;
+      let d = 384 * delta;
       if (gamepad_connected && gamepad.axes[0] !== 0) {
         d *= Math.abs(gamepad.axes[0]);
       }
@@ -191,8 +192,9 @@ class Sprite extends Vec2 {
     );
     //this.matrix = Mat3.rotate(this.matrix, angleInRadians);
     //this.matrix = Mat3.scale(this.matrix, scale[0], scale[1]);
-    gl.uniform4fv(program.colorLoc, this.color);
-    gl.uniformMatrix3fv(program.matrixLoc, false, this.matrix);
+    //gl.uniform4fv(program.colorLoc, this.color);
+    gl.uniform1i(tileProgram.textureLoc, this.color);
+    gl.uniformMatrix3fv(tileProgram.matrixLoc, false, this.matrix);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
     return this;
   }
@@ -375,7 +377,7 @@ class Sprite extends Vec2 {
           return true;
         }
       }
-      if (scene[i].id === "d2") {
+      /*if (scene[i].id === "d2") {
         if (this.col(scene[i])) {
           scene[i].color = [1, 1.54545454545, 0, 1];
           scene[i].render();
@@ -389,7 +391,7 @@ class Sprite extends Vec2 {
           alert("U WARP BACK A LEVEL!!");
           return true;
         }
-      }
+      }*/
     }
   }
 }
@@ -404,9 +406,19 @@ gl.activeTexture(gl.TEXTURE2);
 gl.bindTexture(gl.TEXTURE_2D, textures["lava"]);
 
 gl.activeTexture(gl.TEXTURE3);
+gl.bindTexture(gl.TEXTURE_2D, textures["player"]);
+
+gl.activeTexture(gl.TEXTURE4);
 gl.bindTexture(gl.TEXTURE_2D, textures["coin"]);
 
+gl.activeTexture(gl.TEXTURE5);
+gl.bindTexture(gl.TEXTURE_2D, textures["e1"]);
 
+gl.activeTexture(gl.TEXTURE6);
+gl.bindTexture(gl.TEXTURE_2D, textures["e2"]);
+
+gl.enable(gl.BLEND);
+gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 function drawTile(id, x, y) {
   
   gl.uniform1i(tileProgram.textureLoc, id);
@@ -435,11 +447,11 @@ function rand(a, b) {
 
 const scene = [];
 /**
- * @type {{
+ * @type {({
  *   color: number[];
  *   x: number;
  *   y: number;
- * }}
+ * })[]}
  */
 const tiles = [];
 /**
@@ -469,48 +481,9 @@ let levelSize = { x: null, y: null };
  */
 let tileSize;
 
-const player = new Sprite([0, 0, 1, 1], 40, 40, 1, "p");
+const player = new Sprite(3, 48, 48, 1, "p");
 //player.id="p"
-const gh = [
-  [
-    { width: 50 * 6, height: 50 * 6, y: 50 * 4, x: 0 },
-    { width: 50 * 1, height: 50 * 6, y: 50 * 0, x: 0 },
-    { width: 50 * 9, height: 50 * 6, x: 50 * 9, y: 50 * 4 },
-    { width: 50 * 1, height: 50 * 1, x: 50 * 8, y: 50 * 5 },
 
-    { width: 50 * 1, height: 50 * 5, x: 50 * 18, y: 50 * 5 },
-    { width: 50 * 1, height: 50 * 4, x: 50 * 19, y: 50 * 6 },
-    { width: 50 * 1, height: 50 * 3, x: 50 * 20, y: 50 * 7 },
-    { width: 50 * 31, height: 50 * 2, x: 50 * 21, y: 50 * 8 },
-    { width: 50 * 2, height: 50 * 2, x: 50 * 54, y: 50 * 8 },
-    { width: 50 * 1, height: 50 * 5, x: 50 * 55, y: 50 * 4 },
-    { width: 50 * 20, height: 50 * 8, x: 50 * 55, y: 50 * 6 },
-    { width: 50 * 1, height: 50 * 1, x: 50 * 51, y: 50 * 7 },
-  ],
-  [
-    { width: 50 * 1, height: 50 * 9, y: 50 * 0, x: 0 },
-    { width: 50 * 5, height: 50 * 1, y: 50 * 5, x: 0 },
-    { width: 50 * 3, height: 50 * 1, x: 50 * 6, y: 50 * 4 },
-    { width: 50 * 5, height: 50 * 1, x: 50 * 11, y: 50 * 2 },
-    //{ width: 50 * 1, height: 50 * 5, x: 50 * 18, y: 50 * 5 },
-    //{ width: 50 * 1, height: 50 * 4, x: 50 * 19, y: 50 * 6 },
-    //{ width: 50 * 1, height: 50 * 3, x: 50 * 20, y: 50 * 7 },
-    { width: 50 * 56, height: 50 * 1, x: 50 * 0, y: 50 * 9 },
-    //{ width: 50 * 2, height: 50 * 2, x: 50 * 54, y: 50 * 8 },
-    { width: 50 * 1, height: 50 * 5, x: 50 * 55, y: 50 * 4 },
-    { width: 50 * 8, height: 50 * 1, x: 50 * 20, y: 50 * 3 },
-  ],
-];
-const lh = [
-  [
-    { width: 50 * 3, height: 50 * 2, y: 50 * 8, x: 50 * 6 },
-    { width: 50 * 2, height: 50 * 2, y: 50 * 8, x: 50 * 52 },
-  ],
-  [
-    // { width: 50 * 3, height: 50 * 2, y: 50 * 8, x: 50 * 6 },
-    //{ width: 50 * 2, height: 50 * 2, y: 50 * 8, x: 50 * 52 }
-  ],
-];
 const d = [];
 const d2 = [];
 function parseLayer(layer, width, height, background) {
@@ -520,68 +493,68 @@ function parseLayer(layer, width, height, background) {
         case 1:
           (background ? tiles : frontTiles).push({
             id: 0,
-            x: x * 50 + 25,
-            y: y * 50 + 25,
+            x: x * 64 + 32,
+            y: y * 64 + 32,
           });
           //console.log("b" + x);
           break;
         case 2:
           (background ? tiles : frontTiles).push({
             id: 1,
-            x: x * 50 + 25,
-            y: y * 50 + 25,
+            x: x * 64 + 32,
+            y: y * 64 + 32,
           });
           break;
         case 3:
           (background ? tiles : frontTiles).push({
             id: 2,
-            x: x * 50 + 25,
-            y: y * 50 + 25,
+            x: x * 64 + 32,
+            y: y * 64 + 32,
           });
           //console.log("l");
           break;
         case 4:
-          player.pos(x * 50 + 25, y * 50 + 25);
+          player.pos(x * 64 + 32, y * 64 + 32);
           break;
         case 6:
           scene.push(
-            new Sprite([1, 1, 1, 1], 50, 50, 1, "e1").pos(
-              x * 50 + 25,
-              y * 50 + 24
+            new Sprite(5, 64, 64, 1, "e1").pos(
+              x * 64 + 32,
+              y * 64 + 31
             )
           );
           break;
         case 7:
           scene.push(
-            new Sprite([0, 0.5, 0, 1], 50, 50, 1, "e2").pos(
-              x * 50 + 25,
-              y * 50 + 24
+            new Sprite(6, 64, 64, 1, "e2").pos(
+              x * 64 + 32,
+              y * 64 + 31
             )
           );
           break;
         case 8:
-          scene.push(
-            new Sprite([0.647, 0.164, 0.164, 1], 50, 50, 0, "d1").pos(
-              x * 50 + 25,
-              y * 50 + 25
+          /*scene.push(
+            new Sprite([0.647, 0.164, 0.164, 1], 64, 64, 0, "d1").pos(
+              x * 64 + 32,
+              y * 64 + 32
             )
           );
-          d.push(scene.length - 1);
+          d.push(scene.length - 1);*/
           break;
         case "/":
           scene.push(
-            new Sprite([0, 0, 0, 1], 50, 50, 0, "d2").pos(
-              x * 50 + 25,
-              y * 50 + 25
+            new Sprite([0, 0, 0, 1], 64, 64, 0, "d2").pos(
+              x * 64 + 32,
+              y * 64 + 32
             )
           );
           //   d2.push(scene.length - 1);
           break;
         case 5:
           scene.push(
-            new Sprite([1, 0.843, 0, 1], 25, 25, 0, "c").pos(
-              x * 50 + 25,
-              y * 50 + 25
+            new Sprite(4, 32, 32, 0, "c").pos(
+              x * 64 + 32,
+              y * 64 + 32
             )
           );
           break;
@@ -696,9 +669,6 @@ function createLevel() {
     }*/
   scene.push(player);
 }
-function Aihitbox() {
-  for (let i = 0; i < scene.length; i++) {}
-}
 function newLevel() {
   currentLevel++;
   if (coins <= 0) {
@@ -725,11 +695,16 @@ function newLevel() {
 }
 createLevel();
 //alert(scene.length)
-gl.useProgram(program.program);
-gl.enableVertexAttribArray(program.positionLoc);
+// gl.useProgram(program.program);
+// gl.enableVertexAttribArray(program.positionLoc);
+// gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
+// gl.vertexAttribPointer(program.positionLoc, 2, gl.FLOAT, false, 0, 0);
+gl.useProgram(tileProgram.program);
+gl.enableVertexAttribArray(tileProgram.positionLoc);
 gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
-gl.vertexAttribPointer(program.positionLoc, 2, gl.FLOAT, false, 0, 0);
-
+gl.vertexAttribPointer(tileProgram.positionLoc, 2, gl.FLOAT, false, 0, 0);
+gl.enableVertexAttribArray(tileProgram.uvLoc);
+gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
 // FPS
 // https://stackoverflow.com/a/16447895/13938811
 
@@ -781,25 +756,20 @@ function render(now) {
     }
 
     //background tiles
-    gl.useProgram(tileProgram.program);
-    gl.enableVertexAttribArray(tileProgram.positionLoc);
-    gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
-    gl.vertexAttribPointer(tileProgram.positionLoc, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(tileProgram.uvLoc);
-    gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
+    
     gl.vertexAttribPointer(tileProgram.uvLoc, 2, gl.FLOAT, false, 0, 0);
     for (let i = 0; i < tiles.length; ++i) {
       const t = tiles[i];
-      if (!(t.x + scrollx < -25 || t.x + scrollx > gl.canvas.width + 25)) {
+      if (!(t.x + scrollx < -32 || t.x + scrollx > gl.canvas.width + 32)) {
         drawTile(t.id, t.x, t.y);
       }
     }
 
     //entities
-    gl.useProgram(program.program);
-    gl.enableVertexAttribArray(program.positionLoc);
-    gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
-    gl.vertexAttribPointer(program.positionLoc, 2, gl.FLOAT, false, 0, 0);
+    // gl.useProgram(program.program);
+    // gl.enableVertexAttribArray(program.positionLoc);
+    // gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
+    //gl.vertexAttribPointer(program.positionLoc, 2, gl.FLOAT, false, 0, 0);
     for (let i = 0; i < scene.length; ++i) {
       const s = scene[i];
       if (!(s.x + scrollx < -200 || s.x + scrollx > gl.canvas.width + 200)) {
@@ -809,16 +779,16 @@ function render(now) {
     }
 
     //foreground tiles
-    gl.useProgram(tileProgram.program);
+    /*gl.useProgram(tileProgram.program);
     gl.enableVertexAttribArray(tileProgram.positionLoc);
     gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
     gl.vertexAttribPointer(tileProgram.positionLoc, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(tileProgram.uvLoc);
-    gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);*/
     gl.vertexAttribPointer(tileProgram.uvLoc, 2, gl.FLOAT, false, 0, 0);
     for (let i = 0; i < frontTiles.length; ++i) {
       const t = frontTiles[i];
-      if (!(t.x + scrollx < -25 || t.x + scrollx > gl.canvas.width + 25)) {
+      if (!(t.x + scrollx < -32 || t.x + scrollx > gl.canvas.width + 32)) {
         drawTile(t.id, t.x, t.y);
       }
     }
@@ -846,8 +816,8 @@ function render(now) {
       requestAnimationFrame(render);
     }
   }
-  if (player.y > 550) {
-    player.y = -50;
+  if (player.y > 704) {
+    player.y = -64;
     player.gravitySpeed = 0;
   }
 }
