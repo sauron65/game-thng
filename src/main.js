@@ -158,6 +158,11 @@ class Sprite extends Vec2 {
       }
       this.y--;
     }
+    if (this.id === "p" && gamepad_connected && gamepad.axes[1] < -0.6) {
+      if (this.cd()) {
+        newLevel();
+      }
+    }
     if (this.id === "p" || this.id === "e1" || this.id === "e2") {
       // if (!pO) {
       this.y += this.gravitySpeed;
@@ -274,8 +279,7 @@ class Sprite extends Vec2 {
       p = false;
     }
     for (let i = scene.length - 1; i >= 0; i--) {
-      //    console.log(i, scene.length, this)
-      if (this.col(scene[i]) && scene[i].id === "e2" && this.id === "p") {
+      if (scene[i] && this.id === "p" && this.col(scene[i]) && scene[i].id === "e2") {
         if (this.gravitySpeed > 0) {
           this.gravitySpeed = -16;
           this.y -= 10;
@@ -595,7 +599,6 @@ function createLevel() {
       levelSize.x = e.data.width;
       levelSize.y = e.data.height;
       tileSize = e.data.tileSize;
-      console.log(tiles, frontTiles);
       progress.innerText = "";
     } else if (e.data.type === "progress") {
       progress.innerText = `${
