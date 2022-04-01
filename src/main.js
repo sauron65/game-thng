@@ -15,6 +15,13 @@ if (!gl) {
 canvas.width = canvas.clientWidth;
 canvas.height = canvas.clientHeight;
 
+const canvas2 = document.createElement("canvas");
+canvas2.style = `position: absolute; left: 0px; top: 0px; width: ${window.innerWidth}px; height: ${window.innerHeight}px; zIndex: 1;`;
+document.body.appendChild(canvas2);
+const ctx = canvas2.getContext("2d");
+ ctx.canvas.width = window.innerWidth;
+ ctx.canvas.height = window.innerHeight;
+
 let jh = -16;
 let rjh = -16;
 let scrollx = 0, scrolly = 0;
@@ -35,12 +42,12 @@ let gamepad;
 const progress = document.querySelector("#progress");
 function gameOver() {
   g = true;
-  ////ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ////ctx.font = "100px arial";
-  ////ctx.fillStyle = "white";
-  ////ctx.textAlign = "center";
-  ////ctx.textBaseline = "middle";
-  ////ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.font = "100px arial";
+  ctx.fillStyle = "white";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
 };
 class Sprite extends Vec2 {
   constructor(color, width, height, weight) {
@@ -95,6 +102,10 @@ class Sprite extends Vec2 {
           this.d = 10;
         }
       }
+      if (this.ce2()) {
+        this.x -= this.d;
+        this.d = -this.d;
+      }
     }
     if (this.id === "p") {
       let d = 384 * delta;
@@ -117,12 +128,6 @@ class Sprite extends Vec2 {
           this.x -= d;
           scrollx += d;
         }
-        if (this.te()) {
-          health--;
-          if (health <= 0) {
-            gameOver();
-          }
-        }
       }
       if (gamepad_connected ? key.left || gamepad.axes[0] < 0 : key.left) {
         //  if (!pO) {
@@ -133,14 +138,14 @@ class Sprite extends Vec2 {
           this.x += d;
           scrollx -= d;
         }
-        if (this.te()) {
-          health -= ptimer * 10;
-          if (health <= 0) {
-            gameOver();
-          }
-        }
       }
       if (!this.cp3()) pO = false;
+      if (this.te()) {
+        health--
+        if (health <= 0) {
+          gameOver();
+        }
+      }
     }
     if (
       this.id === "p" &&
@@ -361,6 +366,17 @@ class Sprite extends Vec2 {
     }
     return;
   }
+  ce2() {
+    for (let i = scene.length - 1; i >= 0; i--) {
+      if (scene[i].id === "e2" && scene[i] !== this && this.col(scene[i])) {
+        return true;
+      }
+    }
+    return false;
+  }
+  /**
+   * @param {string} i 
+   */
   st(i) {
     this.type = i;
     return this;
@@ -681,18 +697,18 @@ function newLevel() {
     coins--;
   }
   if (currentLevel > 2 - 1) {
-    //ctx.setTransform(1, 0, 0, 1, 0, 0);
-    //ctx.font = "100px arial";
-    //ctx.fillStyle = "white";
-    //ctx.textAlign = "center";
-    //ctx.textBaseline = "middle";
-    //ctx.fillText("YOU BEAT THE GAME", canvas.width / 2, canvas.height / 2);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.font = "100px arial";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("YOU BEAT THE GAME", canvas.width / 2, canvas.height / 2);
     /*ctx.fillText(
       "COINS: %" + Math.round((c / 17) * 100),
       canvas.width / 2,
       canvas.height / 2 + 100
     );*/
-    //ctx.fillText("HEALF: " + health, canvas.width / 2, canvas.height / 2 + 200);
+    ctx.fillText("HEALF: " + health, canvas.width / 2, canvas.height / 2 + 200);
     g = true; //+(health/10)+(score/100)
   } else {
     createLevel();
@@ -748,8 +764,8 @@ function render(now) {
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   gl.clearColor(0, 0, 0, 1);
   gl.clear(gl.COLOR_BUFFER_BIT);
-  //ctx.setTransform(1, 0, 0, 1, 0, 0);
-  //ctx.clearRect(0, 0, 1000, 500);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, 1000, 500);
   //ctx.translate(scrollx, scrolly);
   if (progress.innerText === "") {
     //entities - update
@@ -800,20 +816,20 @@ function render(now) {
     }
   }
 
-  //ctx.setTransform(1, 0, 0, 1, 0, 0);
-  //ctx.textBaseline = "alphabetic";
-  //ctx.textAlign = "start";
-  //ctx.fillStyle = "white";
-  //ctx.font = "25px arial";
-  //ctx.fillText("health:", 10, 25);
-  //ctx.fillStyle = "red";
-  //ctx.fillRect(90, 5, health * 10, 25);
-  //ctx.fillStyle = "white";
-  //ctx.font = "25px arial";
-  //ctx.fillText("score: " + score, 700, 25);
-  //ctx.fillStyle = "white";
-  //ctx.font = "25px arial";
-  //ctx.fillText("level: " + (currentLevel + 1) + " y:" + player.y, 700, 50);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.textBaseline = "alphabetic";
+  ctx.textAlign = "start";
+  ctx.fillStyle = "white";
+  ctx.font = "25px arial";
+  ctx.fillText("health:", 10, 25);
+  ctx.fillStyle = "red";
+  ctx.fillRect(90, 5, health * 10, 25);
+  ctx.fillStyle = "white";
+  ctx.font = "25px arial";
+  ctx.fillText("score: " + score, 700, 25);
+  ctx.fillStyle = "white";
+  ctx.font = "25px arial";
+  ctx.fillText("level: " + (currentLevel + 1) + " y:" + player.y, 700, 50);
   if (!g) {
     try {
       requestAnimationFrame(render);
