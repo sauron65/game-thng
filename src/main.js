@@ -26,6 +26,7 @@ let jh = -16;
 let rjh = -16;
 let scrollx = 0, scrolly = 0;
 let g = false;
+let screen = "title";
 let health = 50;
 let score = 0;
 let ptimer = 0;
@@ -48,6 +49,10 @@ function gameOver() {
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
+  setTimeout(function () {
+    g = false;
+    screen = "title";
+  }, 10000)
 };
 class Sprite extends Vec2 {
   constructor(color, width, height, weight) {
@@ -761,75 +766,77 @@ function render(now) {
   const averageFPS = totalFPS / numFrames;
 
   avgElem.textContent = averageFPS; // update avg display
-  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-  gl.clearColor(0, 0, 0, 1);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, 1000, 500);
-  //ctx.translate(scrollx, scrolly);
-  if (progress.innerText === "") {
-    //entities - update
-    for (let i = 0; i < scene.length; ++i) {
-      const s = scene[i];
-      if (!(s.x + scrollx < -200 || s.x + scrollx > gl.canvas.width + 200)) {
-        s.update(delta);
-        //console.log(scene[i].x+","+scene[i].x)
+  if (screen === "play") {
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    gl.clearColor(0, 0, 0, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    //ctx.translate(scrollx, scrolly);
+    if (progress.innerText === "") {
+      //entities - update
+      for (let i = 0; i < scene.length; ++i) {
+        const s = scene[i];
+        if (!(s.x + scrollx < -200 || s.x + scrollx > gl.canvas.width + 200)) {
+          s.update(delta);
+          //console.log(scene[i].x+","+scene[i].x)
+        }
       }
-    }
 
-    //background tiles
+      //background tiles
     
-    gl.vertexAttribPointer(tileProgram.uvLoc, 2, gl.FLOAT, false, 0, 0);
-    for (let i = 0; i < tiles.length; ++i) {
-      const t = tiles[i];
-      if (!(t.x + scrollx < -32 || t.x + scrollx > gl.canvas.width + 32)) {
-        drawTile(t.id, t.x, t.y);
+      gl.vertexAttribPointer(tileProgram.uvLoc, 2, gl.FLOAT, false, 0, 0);
+      for (let i = 0; i < tiles.length; ++i) {
+        const t = tiles[i];
+        if (!(t.x + scrollx < -32 || t.x + scrollx > gl.canvas.width + 32)) {
+          drawTile(t.id, t.x, t.y);
+        }
       }
-    }
 
-    //entities
-    // gl.useProgram(program.program);
-    // gl.enableVertexAttribArray(program.positionLoc);
-    // gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
-    //gl.vertexAttribPointer(program.positionLoc, 2, gl.FLOAT, false, 0, 0);
-    for (let i = 0; i < scene.length; ++i) {
-      const s = scene[i];
-      if (!(s.x + scrollx < -200 || s.x + scrollx > gl.canvas.width + 200)) {
-        s.render();
-        //console.log(scene[i].x+","+scene[i].x)
+      //entities
+      // gl.useProgram(program.program);
+      // gl.enableVertexAttribArray(program.positionLoc);
+      // gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
+      //gl.vertexAttribPointer(program.positionLoc, 2, gl.FLOAT, false, 0, 0);
+      for (let i = 0; i < scene.length; ++i) {
+        const s = scene[i];
+        if (!(s.x + scrollx < -200 || s.x + scrollx > gl.canvas.width + 200)) {
+          s.render();
+          //console.log(scene[i].x+","+scene[i].x)
+        }
       }
-    }
 
-    //foreground tiles
-    /*gl.useProgram(tileProgram.program);
-    gl.enableVertexAttribArray(tileProgram.positionLoc);
-    gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
-    gl.vertexAttribPointer(tileProgram.positionLoc, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(tileProgram.uvLoc);
-    gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);*/
-    gl.vertexAttribPointer(tileProgram.uvLoc, 2, gl.FLOAT, false, 0, 0);
-    for (let i = 0; i < frontTiles.length; ++i) {
-      const t = frontTiles[i];
-      if (!(t.x + scrollx < -32 || t.x + scrollx > gl.canvas.width + 32)) {
-        drawTile(t.id, t.x, t.y);
+      //foreground tiles
+      /*gl.useProgram(tileProgram.program);
+      gl.enableVertexAttribArray(tileProgram.positionLoc);
+      gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
+      gl.vertexAttribPointer(tileProgram.positionLoc, 2, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(tileProgram.uvLoc);
+      gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);*/
+      gl.vertexAttribPointer(tileProgram.uvLoc, 2, gl.FLOAT, false, 0, 0);
+      for (let i = 0; i < frontTiles.length; ++i) {
+        const t = frontTiles[i];
+        if (!(t.x + scrollx < -32 || t.x + scrollx > gl.canvas.width + 32)) {
+          drawTile(t.id, t.x, t.y);
+        }
       }
     }
+    ctx.textBaseline = "alphabetic";
+    ctx.textAlign = "start";
+    ctx.fillStyle = "white";
+    ctx.font = "25px arial";
+    ctx.fillText("health:", 10, 25);
+    ctx.fillStyle = "red";
+    ctx.fillRect(90, 5, health * 10, 25);
+    ctx.fillStyle = "white";
+    ctx.font = "25px arial";
+    ctx.fillText("score: " + score, 700, 25);
+    ctx.fillStyle = "white";
+    ctx.font = "25px arial";
+    ctx.fillText("level: " + (currentLevel + 1) + " y:" + player.y, 700, 50);
+  } else if (screen === "title") {
+    
   }
 
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.textBaseline = "alphabetic";
-  ctx.textAlign = "start";
-  ctx.fillStyle = "white";
-  ctx.font = "25px arial";
-  ctx.fillText("health:", 10, 25);
-  ctx.fillStyle = "red";
-  ctx.fillRect(90, 5, health * 10, 25);
-  ctx.fillStyle = "white";
-  ctx.font = "25px arial";
-  ctx.fillText("score: " + score, 700, 25);
-  ctx.fillStyle = "white";
-  ctx.font = "25px arial";
-  ctx.fillText("level: " + (currentLevel + 1) + " y:" + player.y, 700, 50);
   if (!g) {
     try {
       requestAnimationFrame(render);
