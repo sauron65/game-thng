@@ -35,6 +35,8 @@ let coins = 0;
 let pO = false;
 let gamepad_connected = false;
 
+globalThis.screen = screen;
+
 /**
  * @type {Gamepad}
  */
@@ -51,7 +53,7 @@ function gameOver() {
   ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
   setTimeout(function () {
     g = false;
-    screen = "title";
+    globalThis.screen = "title";
   }, 10000)
 };
 class Sprite extends Vec2 {
@@ -767,10 +769,11 @@ function render(now) {
 
   avgElem.textContent = averageFPS; // update avg display
   ctx.clearRect(0, 0, 1000, 500);
-  if (screen === "play") {
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clearColor(0, 0, 0, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  gl.clearColor(0, 0, 0, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  
+  if (globalThis.screen === "play") {
     //ctx.translate(scrollx, scrolly);
     if (progress.innerText === "") {
       //entities - update
@@ -833,8 +836,12 @@ function render(now) {
     ctx.fillStyle = "white";
     ctx.font = "25px arial";
     ctx.fillText("level: " + (currentLevel + 1) + " y:" + player.y, 700, 50);
-  } else if (screen === "title") {
-    
+  } else if (globalThis.screen === "title") {
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "white";
+    ctx.font = "100px arial";
+    ctx.fillText("GAME-THNG", canvas2.width / 2, (canvas2.height / 2) - (canvas2.height / 5));
   }
 
   if (!g) {
