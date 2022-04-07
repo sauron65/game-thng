@@ -5,6 +5,7 @@ import {
   resizeCanvasToDisplaySize,
 } from "./modules/functions.js";
 import { key } from "./modules/key.js";
+import { mouse } from "./modules/mouse.js";
 
 const π = Math.PI;
 if (!gl) {
@@ -19,8 +20,8 @@ const canvas2 = document.createElement("canvas");
 canvas2.style = `position: absolute; left: 0px; top: 0px; width: ${window.innerWidth}px; height: ${window.innerHeight}px; zIndex: 1;`;
 document.body.appendChild(canvas2);
 const ctx = canvas2.getContext("2d");
- ctx.canvas.width = window.innerWidth;
- ctx.canvas.height = window.innerHeight;
+ctx.canvas.width = window.innerWidth;
+ctx.canvas.height = window.innerHeight;
 
 let jh = -16;
 let rjh = -16;
@@ -604,6 +605,7 @@ function createLevel() {
   key.right = false;
   key.left = false;
   key.up = false;
+  progress.innerText = "0%";
   // scene.push(player)
   const levelWorker = new Worker("/level_worker.js");
   levelWorker.postMessage({
@@ -722,12 +724,12 @@ function newLevel() {
     g = false;
   }
 }
-createLevel();
 //alert(scene.length)
 // gl.useProgram(program.program);
 // gl.enableVertexAttribArray(program.positionLoc);
 // gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
 // gl.vertexAttribPointer(program.positionLoc, 2, gl.FLOAT, false, 0, 0);
+progress.innerText = "";
 gl.useProgram(tileProgram.program);
 gl.enableVertexAttribArray(tileProgram.positionLoc);
 gl.bindBuffer(gl.ARRAY_BUFFER, tileBuffer);
@@ -768,7 +770,7 @@ function render(now) {
   const averageFPS = totalFPS / numFrames;
 
   avgElem.textContent = averageFPS; // update avg display
-  ctx.clearRect(0, 0, 1000, 500);
+  ctx.clearRect(0, 0, canvas2.width, canvas2.height);
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   gl.clearColor(0, 0, 0, 1);
   gl.clear(gl.COLOR_BUFFER_BIT);
@@ -842,6 +844,21 @@ function render(now) {
     ctx.fillStyle = "white";
     ctx.font = "100px arial";
     ctx.fillText("GAME-THNG", canvas2.width / 2, (canvas2.height / 2) - (canvas2.height / 5));
+
+    ctx.fillStyle = "grey";
+    ctx.fillRect((canvas2.width / 2) - 250,  (canvas2.height / 2) - 25, 500, 50);
+    ctx.fillStyle = "black";
+    ctx.font = "30px arial";
+    ctx.fillText("START (A ON CONTROLLER)", canvas2.width / 2, (canvas2.height / 2));
+    console.log(Sprite.prototype.col.bind(mouse)({ x: (canvas2.width / 2) - 250,  y: (canvas2.height / 2) - 25, width: 500, height: 50}) && mouse.click);
+
+    if (
+        (Sprite.prototype.col.bind(mouse)({ x: (canvas2.width / 2) - 250,  y: (canvas2.height / 2) - 25, width: 500, height: 50}) && mouse.click) ||
+        (gamepad_connected && gamepad.buttons[0].pressed)
+      ) {
+      globalThis.screen = "play";
+      createLevel();
+    }
   }
 
   if (!g) {
