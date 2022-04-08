@@ -24,7 +24,7 @@ ctx.canvas.width = window.innerWidth;
 ctx.canvas.height = window.innerHeight;
 
 let jh = -16;
-let rjh = -16;
+let rjh = -18;
 let scrollx = 0, scrolly = 0;
 let g = false;
 let screen = "title";
@@ -55,6 +55,7 @@ function gameOver() {
   setTimeout(function () {
     g = false;
     globalThis.screen = "title";
+    requestAnimationFrame(render);
   }, 10000)
 };
 class Sprite extends Vec2 {
@@ -162,7 +163,7 @@ class Sprite extends Vec2 {
       this.y++;
       if (this.cp()) {
         this.gravitySpeed = jh;
-        if (key.a) {
+        if (key.a || gamepad_connected ? key.a || gamepad.buttons[2].pressed : key.a) {
           this.gravitySpeed = rjh;
         }
         if (this.cd() && !gamepad_connected) {
