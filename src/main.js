@@ -83,12 +83,6 @@ class Sprite extends Vec2 {
     // this.gravitySpeed += this.gravity;
 
     //ctx.fillStyle = this.color;
-    let gamepads;
-    if (gamepad_connected) {
-      gamepads = navigator.getGamepads();
-      gamepad = gamepads[0];
-      //console.log(gamepad.axes)
-    }
 
     if (this.id === "e1") {
       // let d = rand(-10, 10);
@@ -118,7 +112,7 @@ class Sprite extends Vec2 {
     }
     if (this.id === "p") {
       let d = 384 * delta;
-      if (gamepad_connected && gamepad.axes[0] !== 0) {
+      if (gamepad_connected && !key.right && !key.left) {
         d *= Math.abs(gamepad.axes[0]);
       }
       /*if (this.cp3()) {
@@ -128,7 +122,7 @@ class Sprite extends Vec2 {
         d *= 2;
       }
       d = Math.floor(d);
-      if (gamepad_connected ? key.right || gamepad.axes[0] > 0 : key.right) {
+      if (gamepad_connected ? key.right || (gamepad.axes[0] > 0) : key.right) {
         // if (!pO) {
         this.x += d;
         scrollx -= d;
@@ -138,7 +132,7 @@ class Sprite extends Vec2 {
           scrollx += d;
         }
       }
-      if (gamepad_connected ? key.left || gamepad.axes[0] < 0 : key.left) {
+      if (gamepad_connected ? key.left || (gamepad.axes[0] < 0) : key.left) {
         //  if (!pO) {
         this.x -= d;
         scrollx += d;
@@ -452,7 +446,6 @@ gl.bindTexture(gl.TEXTURE_2D, textures["door"]);
 gl.enable(gl.BLEND);
 gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 function drawTile(id, x, y) {
-  
   gl.uniform1i(tileProgram.textureLoc, id);
   gl.uniformMatrix3fv(
     tileProgram.matrixLoc,
@@ -469,6 +462,9 @@ function drawTile(id, x, y) {
 function solidTileAt(x, y) {
   const col = Math.floor(x / tileSize[0]);
   const row = Math.floor(y / tileSize[1]);
+  if (currentLevel === 1) {
+    hitBoxTiles[row * levelSize.x + col];
+  }
 
   return hitBoxTiles[row * levelSize.x + col];
 }
@@ -477,6 +473,9 @@ function rand(a, b) {
   return Math.floor(Math.random() * (b - a)) + a;
 }
 
+/**
+ * @type {Sprite[]}
+ */
 const scene = [];
 /**
  * @type {({
@@ -775,6 +774,13 @@ function render(now) {
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   gl.clearColor(0, 0, 0, 1);
   gl.clear(gl.COLOR_BUFFER_BIT);
+
+  let gamepads;
+  if (gamepad_connected) {
+    gamepads = navigator.getGamepads();
+    gamepad = gamepads[0];
+    //console.log(gamepad.axes)
+  }
   
   if (globalThis.screen === "play") {
     //ctx.translate(scrollx, scrolly);
@@ -838,7 +844,7 @@ function render(now) {
     ctx.fillText("score: " + score, 700, 25);
     ctx.fillStyle = "white";
     ctx.font = "25px arial";
-    ctx.fillText("level: " + (currentLevel + 1) + " y:" + player.y, 700, 50);
+    ctx.fillText(`level: ${currentLevel + 1} y: ${player.y} x: ${player.x}`, 700, 50);
   } else if (globalThis.screen === "title") {
     ctx.textBaseline = "middle";
     ctx.textAlign = "center";
@@ -851,11 +857,11 @@ function render(now) {
     ctx.fillStyle = "black";
     ctx.font = "30px arial";
     ctx.fillText("START (A ON CONTROLLER)", canvas2.width / 2, (canvas2.height / 2));
-    console.log(Sprite.prototype.col.bind(mouse)({ x: (canvas2.width / 2) - 250,  y: (canvas2.height / 2) - 25, width: 500, height: 50}) && mouse.click);
+    //console.log(gamepad_connected, gamepad);
 
     if (
-        (Sprite.prototype.col.bind(mouse)({ x: (canvas2.width / 2) - 250,  y: (canvas2.height / 2) - 25, width: 500, height: 50}) && mouse.click) ||
-        (gamepad_connected && gamepad.buttons[0].pressed)
+        gamepad_connected ? 
+        (Sprite.prototype.col.bind(mouse)({ x: (canvas2.width / 2) - 250,  y: (canvas2.height / 2) - 25, width: 500, height: 50}) && mouse.click) || gamepad.buttons[0].pressed : (Sprite.prototype.col.bind(mouse)({ x: (canvas2.width / 2) - 250,  y: (canvas2.height / 2) - 25, width: 500, height: 50}) && mouse.click)
       ) {
       globalThis.screen = "play";
       createLevel();

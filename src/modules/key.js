@@ -1,3 +1,8 @@
+/**
+ * @type {{
+ *  [x: string]: boolean
+ * }}
+ */
 let key = {};
 window.addEventListener("keydown", function (event) {
   key.event = event;
