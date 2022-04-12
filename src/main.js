@@ -9,7 +9,7 @@ import { mouse } from "./modules/mouse.js";
 
 const π = Math.PI;
 if (!gl) {
-  document.querySelector("p").textContent = "Your browser does not support WebGL 2";
+  document.querySelector("p").textContent = "Your browser does not support WebGL 2. (Recomended) Use a recent version of Chrome/Edge, or Safari 15+";
   throw new Error("no WebGL 2");
 }
 
@@ -55,8 +55,13 @@ function gameOver() {
   setTimeout(function () {
     g = false;
     globalThis.screen = "title";
+    health = 50;
+    ptimer = 0;
+    coins = 0;
+    score = 0;
+    currentLevel = 0;
     requestAnimationFrame(render);
-  }, 10000)
+  }, 5000)
 };
 class Sprite extends Vec2 {
   constructor(color, width, height, weight) {
@@ -76,7 +81,6 @@ class Sprite extends Vec2 {
       this.d = 10;
     }
     this.matrix = Mat3.identity();
-    console.log(this.color);
     // console.log("("+this.width+","+this.height+")")
   }
   update(delta) {
@@ -582,6 +586,7 @@ function parseLayer(layer, width, height, background) {
           //   d2.push(scene.length - 1);
           break;
         case 5:
+         // console.count("coins")
           scene.push(
             new Sprite(4, 32, 32, 0, "c").pos(
               x * 64 + 32,
@@ -606,7 +611,6 @@ function createLevel() {
   key.left = false;
   key.up = false;
   progress.innerText = "0%";
-  // scene.push(player)
   const levelWorker = new Worker("/level_worker.js");
   levelWorker.postMessage({
     type: "level",
@@ -698,7 +702,6 @@ function createLevel() {
         }
       }
     }*/
-  scene.push(player);
 }
 function newLevel() {
   currentLevel++;
@@ -712,12 +715,12 @@ function newLevel() {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("YOU BEAT THE GAME", canvas.width / 2, canvas.height / 2);
-    /*ctx.fillText(
-      "COINS: %" + Math.round((c / 17) * 100),
+    ctx.fillText(
+      "COINS: %" + Math.round((coins / 70) * 100),
       canvas.width / 2,
       canvas.height / 2 + 100
-    );*/
-    ctx.fillText("HEALF: " + health, canvas.width / 2, canvas.height / 2 + 200);
+    );
+    ctx.fillText("HEALTH: " + health, canvas.width / 2, canvas.height / 2 + 200);
     g = true; //+(health/10)+(score/100)
   } else {
     createLevel();
@@ -786,6 +789,7 @@ function render(now) {
     //ctx.translate(scrollx, scrolly);
     if (progress.innerText === "") {
       //entities - update
+      player.update(delta);
       for (let i = 0; i < scene.length; ++i) {
         const s = scene[i];
         if (!(s.x + scrollx < -200 || s.x + scrollx > gl.canvas.width + 200)) {
@@ -816,6 +820,7 @@ function render(now) {
           //console.log(scene[i].x+","+scene[i].x)
         }
       }
+      player.render();
 
       //foreground tiles
       /*gl.useProgram(tileProgram.program);
@@ -903,11 +908,12 @@ document.addEventListener(
   },
   false
 );
-window.scene = scene;
-window.Sprite = Sprite;
-window.Vec2 = Vec2;
-window.gl = gl;
-window.p = p;
+globalThis.scene = scene;
+globalThis.Sprite = Sprite;
+globalThis.Vec2 = Vec2;
+globalThis.gl = gl;
+globalThis.p = p;
+
 function toggleFullScreen() {
   if (!document.fullscreenElement) {
     canvas.requestFullscreen();
