@@ -109,6 +109,15 @@ class Sprite extends Vec2 {
           this.d = 10;
         }
       }
+      this.y++
+      if (!this.cp()) {
+        this.x -= this.d;
+        this.d = rand(-1, 1) * 5;
+        if (this.d === 0) {
+          this.d = 10;
+        }
+      }
+      this.y--
       if (this.ce2()) {
         this.x -= this.d;
         this.d = -this.d;
@@ -577,7 +586,7 @@ function parseLayer(layer, width, height, background) {
           d2.push(scene.length - 1);
           break;
         case 5:
-         // console.count("coins")
+          console.count("coins")
           scene.push(
             new Sprite(4, 32, 32, 0, "c").pos(
               x * 64 + 32,
@@ -707,7 +716,7 @@ function newLevel() {
     ctx.textBaseline = "middle";
     ctx.fillText("YOU BEAT THE GAME", canvas.width / 2, canvas.height / 2);
     ctx.fillText(
-      "COINS: %" + Math.round((coins / 70) * 100),
+      "COINS: %" + Math.round((coins / 97) * 100),
       canvas.width / 2,
       canvas.height / 2 + 100
     );
@@ -883,8 +892,8 @@ window.addEventListener("gamepadconnected", function (e) {
   gamepad_connected = true;
 });
 window.addEventListener("gamepaddisconnected", function (e) {
-  console.log("connect", e.gamepad);
-  gamepad_connected = true;
+  console.log("disconnect", e.gamepad);
+  gamepad_connected = false;
 });
 requestAnimationFrame(render);
 document.addEventListener(
