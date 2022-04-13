@@ -404,21 +404,12 @@ class Sprite extends Vec2 {
           return true;
         }
       }
-      /*if (scene[i].id === "d2") {
+      if (scene[i].id === "d2") {
         if (this.col(scene[i])) {
-          scene[i].color = [1, 1.54545454545, 0, 1];
-          scene[i].render();
-          g = true;
-          //  //ctx.fillText("WARP",500,500)
-
-          setTimeout(function () {
-            g = false;
-          }, 1200);
-          currentLevel -= 2;
-          alert("U WARP BACK A LEVEL!!");
+          currentLevel += 1;
           return true;
         }
-      }*/
+      }
     }
   }
 }
@@ -576,14 +567,14 @@ function parseLayer(layer, width, height, background) {
           );
           d.push(scene.length - 1);
           break;
-        case "/":
+        case 9:
           scene.push(
-            new Sprite([0, 0, 0, 1], 64, 64, 0, "d2").pos(
+            new Sprite(7, 64, 64, 0, "d2").pos(
               x * 64 + 32,
               y * 64 + 32
             )
           );
-          //   d2.push(scene.length - 1);
+          d2.push(scene.length - 1);
           break;
         case 5:
          // console.count("coins")
@@ -614,7 +605,7 @@ function createLevel() {
   const levelWorker = new Worker("/level_worker.js");
   levelWorker.postMessage({
     type: "level",
-    file: `/level${currentLevel + 1}.json`,
+    file: `./levels/level${currentLevel + 1}.json`,
   });
   levelWorker.onmessage = function (e) {
     if (e.data.type === "level") {
@@ -708,7 +699,7 @@ function newLevel() {
   if (coins <= 0) {
     coins--;
   }
-  if (currentLevel > 2 - 1) {
+  if (currentLevel > 3 - 1) {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.font = "100px arial";
     ctx.fillStyle = "white";
