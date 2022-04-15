@@ -76,9 +76,9 @@ class Sprite extends Vec2 {
     this.type = "";
     this.c = true;
     this.f = 0;
-    this.d = rand(-1, 1) * 10;
+    this.d = rand(-1, 1) * 400;
     if (this.d === 0) {
-      this.d = 10;
+      this.d = 384;
     }
     this.matrix = Mat3.identity();
     // console.log("("+this.width+","+this.height+")")
@@ -90,36 +90,36 @@ class Sprite extends Vec2 {
 
     if (this.id === "e1") {
       // let d = rand(-10, 10);
-      this.x += this.d;
+      this.x += this.d * delta;
       if (this.cp()) {
-        this.x -= this.d;
-        this.d = rand(-1, 1) * 10;
+        this.x -= this.d * delta;
+        this.d = rand(-1, 1) * 400;
         if (this.d === 0) {
-          this.d = 10;
+          this.d = 384;
         }
       }
     }
     if (this.id === "e2") {
       // let d = rand(-10, 10);
-      this.x += this.d;
+      this.x += this.d * delta;
       if (this.cp()) {
-        this.x -= this.d;
-        this.d = rand(-1, 1) * 5;
+        this.x -= this.d * delta;
+        this.d = rand(-1, 1) * 400;
         if (this.d === 0) {
-          this.d = 10;
+          this.d = 384;
         }
       }
       this.y++
       if (!this.cp()) {
-        this.x -= this.d;
-        this.d = rand(-1, 1) * 5;
+        this.x -= this.d * delta;
+        this.d = rand(-1, 1) * 400;
         if (this.d === 0) {
-          this.d = 10;
+          this.d = 384;
         }
       }
       this.y--
       if (this.ce2()) {
-        this.x -= this.d;
+        this.x -= this.d * delta;
         this.d = -this.d;
       }
     }
@@ -466,9 +466,6 @@ function drawTile(id, x, y) {
 function solidTileAt(x, y) {
   const col = Math.floor(x / tileSize[0]);
   const row = Math.floor(y / tileSize[1]);
-  if (currentLevel === 1) {
-    hitBoxTiles[row * levelSize.x + col];
-  }
 
   return hitBoxTiles[row * levelSize.x + col];
 }
@@ -522,6 +519,7 @@ const player = new Sprite(3, 48, 48, 1, "p");
 const d = [];
 const d2 = [];
 function parseLayer(layer, width, height, background) {
+  console.log(width, height)
   for (let y = 0; y < height; ++y) {
     for (let x = 0; x < width; ++x) {
       switch (layer[y * width + x]) {
@@ -708,7 +706,7 @@ function newLevel() {
   if (coins <= 0) {
     coins--;
   }
-  if (currentLevel > 3 - 1) {
+  if (currentLevel > 4 - 1) {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.font = "100px arial";
     ctx.fillStyle = "white";
@@ -757,7 +755,6 @@ function render(now) {
   const delta = now - then; // compute time since last frame
   then = now; // remember time for next frame
   const fps = 1 / delta; // compute frames per second
-  fpsElem.textContent = fps;
   // add the current fps and remove the oldest fps
   totalFPS += fps - (frameTimes[frameCursor] || 0);
 
@@ -772,7 +769,12 @@ function render(now) {
 
   const averageFPS = totalFPS / numFrames;
 
+  if (Number.isNaN(averageFPS) || !isFinite(fps)) {
+    location.reload();
+  }
+
   avgElem.textContent = averageFPS; // update avg display
+  fpsElem.textContent = fps;
   ctx.clearRect(0, 0, canvas2.width, canvas2.height);
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   gl.clearColor(0, 0, 0, 1);
@@ -895,6 +897,13 @@ window.addEventListener("gamepaddisconnected", function (e) {
   console.log("disconnect", e.gamepad);
   gamepad_connected = false;
 });
+window.addEventListener("resize", function (e) {
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
+  canvas2.style = `position: absolute; left: 0px; top: 0px; width: ${window.innerWidth}px; height: ${window.innerHeight}px; zIndex: 1;`;
+  ctx.canvas.width = window.innerWidth;
+  ctx.canvas.height = window.innerHeight;
+})
 requestAnimationFrame(render);
 document.addEventListener(
   "keydown",
@@ -914,9 +923,11 @@ globalThis.Vec2 = Vec2;
 globalThis.gl = gl;
 globalThis.p = p;
 
+const { body } = document;
+
 function toggleFullScreen() {
   if (!document.fullscreenElement) {
-    canvas.requestFullscreen();
+    body.requestFullscreen();
   } else {
     if (document.exitFullscreen) {
       document.exitFullscreen();
