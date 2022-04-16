@@ -857,7 +857,7 @@ function render(now) {
     ctx.textAlign = "center";
     ctx.fillStyle = "white";
     ctx.font = "100px arial";
-    ctx.fillText("GAME-THNG", canvas2.width / 2, (canvas2.height / 2) - (canvas2.height / 5));
+    ctx.fillText("Squario's Adventures in 2D", canvas2.width / 2, (canvas2.height / 2) - (canvas2.height / 5));
 
     ctx.fillStyle = "grey";
     ctx.fillRect((canvas2.width / 2) - 250,  (canvas2.height / 2) - 25, 500, 50);
