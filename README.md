@@ -1,6 +1,6 @@
 It is recommended to use a recent version of Chromium (Chrome/Edge). Unfortunately, Safari won't work.
 
-It is at https://sauron65.github.io/game-thng/game.html
+It is at [https://sauron65.github.io/game-thng/game.html](https://sauron65.github.io/game-thng/game.html)
 
 # Controls
 
@@ -26,7 +26,7 @@ It is at https://sauron65.github.io/game-thng/game.html
 2. ```cd game-thng```
 3. ```npm install```
 4. ```node index.js```
-5. go to https://localhost:500/game.html
+5. go to [https://localhost:500/game.html](https://localhost:500/game.html)
 
 defaults to port 500 <br/>
 select a different port:
