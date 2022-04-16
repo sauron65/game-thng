@@ -609,7 +609,7 @@ function createLevel() {
   key.left = false;
   key.space = false;
   progress.innerText = "0%";
-  const levelWorker = new Worker("/level_worker.js");
+  const levelWorker = new Worker("./level_worker.js");
   levelWorker.postMessage({
     type: "level",
     file: `./levels/level${currentLevel + 1}.json`,
