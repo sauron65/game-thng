@@ -71,14 +71,14 @@ function getTexture(buffer) {
 }
 
 const textureBuffers = await Promise.all([
-  getFile("/textures/stone.boi"),
-  getFile("/textures/mossyStone.boi"),
-  getFile("/textures/lava.boi"),
-  getFile("/textures/player.boi"),
-  getFile("/textures/coin.boi"),
-  getFile("/textures/e1.boi"),
-  getFile("/textures/e2.boi"),
-  getFile("/textures/door.boi")
+  getFile("./textures/stone.boi"),
+  getFile("./textures/mossyStone.boi"),
+  getFile("./textures/lava.boi"),
+  getFile("./textures/player.boi"),
+  getFile("./textures/coin.boi"),
+  getFile("./textures/e1.boi"),
+  getFile("./textures/e2.boi"),
+  getFile("./textures/door.boi")
 ]);
 console.log(textureBuffers);
 
