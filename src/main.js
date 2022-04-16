@@ -9,7 +9,7 @@ import { mouse } from "./modules/mouse.js";
 
 const π = Math.PI;
 if (!gl) {
-  document.querySelector("p").textContent = "Your browser does not support WebGL 2. (Recomended) Use a recent version of Chrome/Edge, or Safari 15+";
+  document.querySelector("p").textContent = "Your browser does not support WebGL 2. (Recomended) Use a recent version of Chrome/Edge"/* + ", or Safari 15+"*/;
   throw new Error("no WebGL 2");
 }
 
@@ -165,7 +165,7 @@ class Sprite extends Vec2 {
     }
     if (
       this.id === "p" &&
-      (gamepad_connected ? key.up || gamepad.buttons[0].pressed : key.up)
+      (gamepad_connected ? key.space || gamepad.buttons[0].pressed : key.space)
     ) {
       this.y++;
       if (this.cp()) {
@@ -173,11 +173,11 @@ class Sprite extends Vec2 {
         if (key.a || gamepad_connected ? key.a || gamepad.buttons[2].pressed : key.a) {
           this.gravitySpeed = rjh;
         }
-        if (this.cd() && !gamepad_connected) {
-          newLevel();
-        }
       }
       this.y--;
+    }
+    if (this.id === "p" && key.up && this.cd()) {
+      newLevel()
     }
     if (this.id === "p" && gamepad_connected && gamepad.axes[1] < -0.6) {
       if (this.cd()) {
@@ -301,11 +301,11 @@ class Sprite extends Vec2 {
     }
     for (let i = scene.length - 1; i >= 0; i--) {
       if (scene[i] && this.id === "p" && this.col(scene[i]) && scene[i].id === "e2") {
-        if (this.gravitySpeed > 0) {
+        if (this.gravitySpeed > 1) {
           this.gravitySpeed = -16;
           this.y -= 10;
           if (
-            gamepad_connected ? key.up || gamepad.buttons[0].pressed : key.up
+            gamepad_connected ? key.space || gamepad.buttons[0].pressed : key.space
           ) {
             this.gravitySpeed = -32;
             this.y -= 10;
@@ -322,7 +322,7 @@ class Sprite extends Vec2 {
           }
           p = true;
         } else {
-          health--;
+          health-= 5;
           if (health <= 0) {
             gameOver();
           }
@@ -607,7 +607,7 @@ function createLevel() {
   scrolly = 0;
   key.right = false;
   key.left = false;
-  key.up = false;
+  key.space = false;
   progress.innerText = "0%";
   const levelWorker = new Worker("/level_worker.js");
   levelWorker.postMessage({
@@ -714,7 +714,7 @@ function newLevel() {
     ctx.textBaseline = "middle";
     ctx.fillText("YOU BEAT THE GAME", canvas.width / 2, canvas.height / 2);
     ctx.fillText(
-      "COINS: %" + Math.round((coins / 97) * 100),
+      "COINS: %" + Math.round((coins / 106) * 100),
       canvas.width / 2,
       canvas.height / 2 + 100
     );

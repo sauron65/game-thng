@@ -1,15 +1,33 @@
+It is recommended to use a recent version of Chromium (Chrome/Edge). Unfortunately, Safari won't work.
+
+It is at https://sauron65.github.io/game-thng/game.html
+
 # Controls
 
 ## keyboard
 
-- ↑(up arrow): jump
+- (space): jump
+- ↑(up arrow): enter door
 - →(right arrow): move right
 - ←(left arrow): move left
-- ↓(down arrow): nothing (just put this so I don't have to google down arrow again lol)
 - A: sprint
 
-## XBOX controller
+## XBOX controller (connect with bluetooth)
 
 - A: jump
 - left joystick: move
+- left joystick (up): enter door
 - X: sprint
+
+
+# For local development/hosting,
+
+1. ```git clone https://github.com/sauron65/game-thng.git```
+2. ```cd game-thng```
+3. ```npm install```
+4. ```node index.js```
+5. go to https://localhost:500/game.html
+
+defaults to port 500 <br/>
+select a different port:
+```PORT=8080 node index.js```
