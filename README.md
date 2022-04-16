@@ -1,6 +1,6 @@
 It is recommended to use a recent version of Chromium (Chrome/Edge). Unfortunately, Safari won't work.
 
-It is at [https://sauron65.github.io/game-thng/game.html](https://sauron65.github.io/game-thng/game.html)
+Click here to play [https://sauron65.github.io/game-thng/game.html](https://sauron65.github.io/game-thng/game.html)
 
 # Controls
 
